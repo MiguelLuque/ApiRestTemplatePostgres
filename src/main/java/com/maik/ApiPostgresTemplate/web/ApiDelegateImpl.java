@@ -18,26 +18,31 @@ public class ApiDelegateImpl implements BooksApiDelegate {
 
     @Override
     public ResponseEntity<Void> createBook(BookDTO body) {
+
         return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<Void> deleteBook(String bookId) {
+
         return BooksApiDelegate.super.deleteBook(bookId);
     }
 
     @Override
     public ResponseEntity<List<TagDTO>> findAllTags() {
+
         return BooksApiDelegate.super.findAllTags();
     }
 
     @Override
     public ResponseEntity<BookDTO> findBookById(String bookId) {
+
         return BooksApiDelegate.super.findBookById(bookId);
     }
 
     @Override
     public ResponseEntity<BookDTO> updateBook(BookDTO body) {
+
         return BooksApiDelegate.super.updateBook(body);
     }
 }
