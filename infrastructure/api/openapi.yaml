@@ -4,41 +4,26 @@ info:
   description: "Simple example of API-First integration in a Spring Boot application!"
   version: 1.0.0-SNAPSHOT
 tags:
-  - name: books
-    description: Operations with books
+  - name: pets
+    description: Operations with pets
   - name: tags
     description: Operations with tags
+  - name: auth
+    description: Authentication operations
 paths:
-  /books:
+  /auth/login:
     post:
       tags:
-        - books
-      summary: Create book
-      description: Create a new book in the system
-      operationId: createBook
+        - auth
+      summary: log in user
+      description: generate JWT
+      operationId: login
       requestBody:
-        description: Book to be created
+        description: Credentials for authentification
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BookDTO'
-        required: true
-      responses:
-        201:
-          description: Successful operation
-      x-codegen-request-body-name: body
-    put:
-      tags:
-        - books
-      summary: Update book
-      description: Update book in the system
-      operationId: updateBook
-      requestBody:
-        description: Updated book
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BookDTO'
+              $ref: '#/components/schemas/AuthRequest'
         required: true
       responses:
         200:
@@ -46,35 +31,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BookDTO'
-        404:
-          description: Book not found
+                $ref: '#/components/schemas/AuthResponse'
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
-      x-codegen-request-body-name: body
-  /books/{bookId}:
+
+  /pets:
     get:
       tags:
-        - books
-      summary: Find book by identifier
-      description: Find book in the system
-      operationId: findBookById
-      parameters:
-        - name: bookId
-          in: path
-          description: The book id that needs to be fetched (use "123" for test purposes)
-          required: true
-          schema:
-            type: string
+        - pets
+      summary: Get all pets
+      description: Get all pets
+      operationId: findAllPets
       responses:
         200:
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BookDTO'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PetDTO'
         400:
           description: Bad request
           content:
@@ -90,82 +70,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
-    delete:
-      tags:
-        - books
-      summary: Delete book by identifier
-      description: Delete book in the system
-      operationId: deleteBook
-      parameters:
-        - name: bookId
-          in: path
-          description: The book id that needs to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        204:
-          description: Successful operation
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDTO'
-              example:
-                code: REQUEST_VALIDATION_ERROR
-                error: There are validation errors
-        404:
-          description: Book not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDTO'
-  /books/tags:
-    get:
-      tags:
-        - tags
-      summary: Find all tags
-      description: Find all tags in the system
-      operationId: findAllTags
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TagDTO'
 components:
   schemas:
-    BookDTO:
+    PetDTO:
       type: object
       required:
-        - title
-        - tags
-        - status
+        - name
+        - type
+        - color
       properties:
         id:
           type: integer
           format: int64
-        title:
+        name:
           type: string
-          example: Harry Potter
-        summary:
+        type:
           type: string
-          example: Harry Potter summary
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagDTO'
-        status:
+        breed:
           type: string
-          enum:
-            - available
-            - pending
-            - reserved
-          example: available
+        color:
+          type: string
+        size:
+          enum: [mini,standard,large,XL]
+        age:
+          type: integer
+
+
     TagDTO:
       type: object
       properties:
@@ -175,6 +105,26 @@ components:
         name:
           type: string
           example: fantasy
+
+    AuthRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        token:
+          type: string
+
     ErrorDTO:
       type: object
       properties:
