@@ -7,7 +7,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.maik.ApiPostgresTemplate.domain.entities.Role;
 import com.maik.ApiPostgresTemplate.domain.entities.User;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,7 +64,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         UserDetails userDetails = getUserDetails(token);
 
         UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(userDetails, null, null);
+                authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         authentication.setDetails(
                 new WebAuthenticationDetailsSource().buildDetails(request));
@@ -72,7 +74,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private UserDetails getUserDetails(String token) {
         User userDetails = new User();
-        String[] jwtSubject = jwtUtil.getSubject(token).split(",");
+        Claims claims = jwtUtil.parseClaims(token);
+        String subject = (String) claims.get(Claims.SUBJECT);
+        String roles = (String) claims.get("roles");
+
+        roles = roles.replace("[", "").replace("]", "");
+        String[] roleNames = roles.split(",");
+
+        for (String aRoleName : roleNames) {
+            userDetails.addRole(new Role(aRoleName));
+        }
+
+        String[] jwtSubject = subject.split(",");
 
         userDetails.setId(Long.parseLong(jwtSubject[0]));
         userDetails.setEmail(jwtSubject[1]);

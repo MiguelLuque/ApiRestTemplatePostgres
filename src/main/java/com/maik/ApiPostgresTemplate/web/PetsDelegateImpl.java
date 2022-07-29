@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @Slf4j
@@ -20,6 +21,7 @@ public class PetsDelegateImpl implements PetsApiDelegate {
 
     private final PetService petService;
 
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EDITOR"})
     @Override
     public ResponseEntity<List<PetDTO>> findAllPets() {
         return ResponseEntity.ok(petService.findAll());
