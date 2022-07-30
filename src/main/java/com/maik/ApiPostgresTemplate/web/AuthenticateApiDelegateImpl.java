@@ -3,6 +3,7 @@ package com.maik.ApiPostgresTemplate.web;
 import com.maik.ApiPostgresTemplate.api.AuthApiDelegate;
 import com.maik.ApiPostgresTemplate.config.JwtTokenUtil;
 import com.maik.ApiPostgresTemplate.domain.entities.User;
+import com.maik.ApiPostgresTemplate.domain.services.interfaces.AuthService;
 import com.maik.ApiPostgresTemplate.models.dto.AuthRequest;
 import com.maik.ApiPostgresTemplate.models.dto.AuthResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,22 +21,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthenticateApiDelegateImpl implements AuthApiDelegate {
 
-    private final AuthenticationManager authManager;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final AuthService authService;
+
     @Override
     public ResponseEntity<AuthResponse> login(AuthRequest authRequest) {
-        AuthResponse response = new AuthResponse();
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequest.getEmail(), authRequest.getPassword())
-        );
+        return ResponseEntity.ok().body(authService.login(authRequest));
+    }
 
-        User user = (User) authentication.getPrincipal();
-        String accessToken = jwtTokenUtil.generateAccessToken(user);
-
-        response.setEmail(user.getEmail());
-        response.setToken(accessToken);
-
-        return ResponseEntity.ok().body(response);
+    @Override
+    public ResponseEntity<AuthResponse> registration(AuthRequest authRequest) {
+        return ResponseEntity.ok().body(authService.registration(authRequest));
     }
 }

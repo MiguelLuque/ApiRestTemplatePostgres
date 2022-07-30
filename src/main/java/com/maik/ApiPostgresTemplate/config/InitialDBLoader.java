@@ -43,7 +43,7 @@ public class InitialDBLoader {
 
     private void createAdmin() {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String password = passwordEncoder.encode("admin");
+        String password = passwordEncoder.encode("Administrator1!");
         User admin = User
                 .builder()
                 .email("admin@gmail.com")
@@ -61,7 +61,7 @@ public class InitialDBLoader {
 
     private void createEditor() {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String password = passwordEncoder.encode("editor");
+        String password = passwordEncoder.encode("Editor1!");
         User editor = User
                 .builder()
                 .email("editor@gmail.com")
@@ -78,7 +78,7 @@ public class InitialDBLoader {
 
     private void createCustomer() {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String password = passwordEncoder.encode("customer");
+        String password = passwordEncoder.encode("Customer1!");
         User customer = User
                 .builder()
                 .email("customer@gmail.com")

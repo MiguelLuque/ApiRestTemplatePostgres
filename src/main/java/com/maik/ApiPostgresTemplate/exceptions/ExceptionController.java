@@ -3,7 +3,9 @@ package com.maik.ApiPostgresTemplate.exceptions;
 import com.maik.ApiPostgresTemplate.models.dto.ErrorDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,35 +22,39 @@ public class ExceptionController {
 	/**
 	 * Generic exception.
 	 * 
-	 * Se lanzará una excepción contralada cuando reciba otra que no haya sido capturada por otro de los métodos
+	 * A qualified exception shall be thrown when it receives an exception that has not been caught by one of the other methods.
 	 *
 	 * @param e the e
 	 * @return the response entity
 	 */
 	@ExceptionHandler(value = Throwable.class)
-	public ResponseEntity<GenericErrorResponse> genericException(Throwable e) {
+	public ResponseEntity<ErrorDTO> genericException(Throwable e) {
 
-		GenericErrorResponse error = new GenericErrorResponse("Internal server error", e.getMessage());
+		ErrorDTO errorDTO = new ErrorDTO();
+		errorDTO.setCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+		errorDTO.setError(e.getMessage());
 
-		return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
 	
 
 	/**
-	 * Price not found exception. 
+	 * Element not found exception.
 	 * 
-	 * Lanzará una excepción cuando no logre recuperar un price 
+	 * Throws an exception when it fails to retrieve an element.
 	 *
 	 * @param e the e
 	 * @return the response entity
 	 */
 	@ExceptionHandler(value = NoSuchElementException.class)
-	public ResponseEntity<GenericErrorResponse> priceNotFoundException(NoSuchElementException e) {
+	public ResponseEntity<ErrorDTO> elementNotFoundException(NoSuchElementException e) {
 
-		GenericErrorResponse error = new GenericErrorResponse("Price not found", e.getMessage());
+		ErrorDTO errorDTO = new ErrorDTO();
+		errorDTO.setCode(HttpStatus.NOT_FOUND.toString());
+		errorDTO.setError("Element not found");
 
-		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
 
 	}
 	
@@ -56,25 +62,56 @@ public class ExceptionController {
 	/**
 	 * Bad request exception.
 	 * 
-	 * Lanzará una excepción cuando no se informen los parámetros correctamente
+	 * Throw an exception when parameters are not reported correctly.
 	 *
 	 * @param e the e
 	 * @return the response entity
 	 */
-	@ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class })
-	public ResponseEntity<GenericErrorResponse> badRequestException(Exception e) {
+	@ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class, MethodArgumentNotValidException.class, IllegalArgumentException.class})
+	public ResponseEntity<ErrorDTO> badRequestException(Exception e) {
 
-		GenericErrorResponse error = new GenericErrorResponse("Bad request", e.getMessage());
+		ErrorDTO errorDTO = new ErrorDTO();
+		errorDTO.setCode(HttpStatus.BAD_REQUEST.toString());
+		errorDTO.setError(e.getMessage());
 
-		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
 
 	}
+
+
+	/**
+	 * Bad credentials exception.
+	 *
+	 * Throws exception when credentials do not match any registered user
+	 *
+	 * @param e the e
+	 * @return the response entity
+	 */
 	@ExceptionHandler({BadCredentialsException.class})
 	public ResponseEntity<ErrorDTO> badCredentialsException(BadCredentialsException e) {
 
 		ErrorDTO errorDTO = new ErrorDTO();
 		errorDTO.setCode(HttpStatus.UNAUTHORIZED.toString());
 		errorDTO.setError("Invalid credentials");
+
+		return new ResponseEntity<>(errorDTO, HttpStatus.UNAUTHORIZED);
+
+	}
+
+	/**
+	 * Access denied exception.
+	 *
+	 * Throws exception when user has no permission to access the resource
+	 *
+	 * @param e the e
+	 * @return the response entity
+	 */
+	@ExceptionHandler({AccessDeniedException.class})
+	public ResponseEntity<ErrorDTO> accessDeniedException(AccessDeniedException e) {
+
+		ErrorDTO errorDTO = new ErrorDTO();
+		errorDTO.setCode(HttpStatus.UNAUTHORIZED.toString());
+		errorDTO.setError("Access denied");
 
 		return new ResponseEntity<>(errorDTO, HttpStatus.UNAUTHORIZED);
 
