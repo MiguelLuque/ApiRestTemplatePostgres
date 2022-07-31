@@ -48,8 +48,8 @@ public class UserServiceImpl implements UserService {
         if(checkIfUserExists(user.getEmail())) {
             throw new IllegalArgumentException("User already exists");
         }
-        User userCreated = userRepository.save(user);
-        return userMapper.toDto(userCreated);
+        User newUser = userRepository.save(user);
+        return userMapper.toDto(newUser);
     }
 
     @Override

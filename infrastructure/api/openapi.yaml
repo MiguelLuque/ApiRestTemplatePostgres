@@ -62,12 +62,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         401:
-          description: Unauthorized
+          description: Email already used
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
-
 
   /pets:
     get:
@@ -94,12 +93,129 @@ paths:
               example:
                 code: REQUEST_VALIDATION_ERROR
                 error: There are some validation errors
+    post:
+      tags:
+        - pets
+      summary: Create pet
+      description: Create a new pet in the system
+      operationId: createPet
+      requestBody:
+        description: Pet to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetDTO'
+        required: true
+      responses:
+        201:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetDTO'
+      x-codegen-request-body-name: body
+    put:
+      tags:
+        - pets
+      summary: Update pet
+      description: Update pet in the system
+      operationId: updatePet
+      requestBody:
+        description: Updated pet
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetDTO'
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetDTO'
         404:
-          description: Book not found
+          description: Pet not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
+      x-codegen-request-body-name: body
+
+  /pets/{petId}:
+    get:
+      tags:
+        - pets
+      summary: Get a pet by ID
+      description: Get a pet by ID
+      operationId: findPetById
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetDTO'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+              example:
+                code: REQUEST_VALIDATION_ERROR
+                error: There are some validation errors
+        404:
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+    delete:
+      tags:
+        - pets
+      summary: Delete a pet
+      description: Delete a pet
+      operationId: DeletePet
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PetDTO'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+              example:
+                code: REQUEST_VALIDATION_ERROR
+                error: There are some validation errors
+        404:
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+
 components:
   schemas:
     PetDTO:
@@ -166,7 +282,7 @@ components:
       properties:
         code:
           type: string
-          example: BOOK_NOT_FOUND
+          example: PET_NOT_FOUND
         error:
           type: string
-          example: The book was not found
+          example: The pet was not found

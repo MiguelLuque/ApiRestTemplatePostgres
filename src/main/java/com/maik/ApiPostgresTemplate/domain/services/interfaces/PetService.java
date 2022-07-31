@@ -9,11 +9,13 @@ public interface PetService {
 
     List<PetDTO> findAll();
 
-    Pet findById(Long id);
+    PetDTO findById(Long id);
 
-    Pet findByName(String name);
+    PetDTO findByName(String name);
 
-    Pet save(Pet pet);
+    PetDTO save(PetDTO petDTO);
+
+    PetDTO update(PetDTO petDTO);
 
     void delete(Long id);
 

@@ -26,4 +26,29 @@ public class PetsDelegateImpl implements PetsApiDelegate {
     public ResponseEntity<List<PetDTO>> findAllPets() {
         return ResponseEntity.ok(petService.findAll());
     }
+
+    @Override
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EDITOR", "ROLE_CUSTOMER"})
+    public ResponseEntity<PetDTO> createPet(PetDTO body) {
+        return ResponseEntity.created(null).body(petService.save(body));
+    }
+
+    @Override
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EDITOR", "ROLE_CUSTOMER"})
+    public ResponseEntity<List<PetDTO>> deletePet(Long petId) {
+        petService.delete(petId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EDITOR", "ROLE_CUSTOMER"})
+    public ResponseEntity<PetDTO> findPetById(Long petId) {
+        return ResponseEntity.ok(petService.findById(petId));
+    }
+
+    @Override
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EDITOR", "ROLE_CUSTOMER"})
+    public ResponseEntity<PetDTO> updatePet(PetDTO body) {
+        return ResponseEntity.ok(petService.update(body));
+    }
 }

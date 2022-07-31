@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -24,23 +26,45 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Pet findById(Long id) {
-        return null;
+    public PetDTO findById(Long id) {
+        return petRepository.findById(id).map(petMapper::toDto).orElseThrow(() -> new NoSuchElementException("Pet not found"));
     }
 
     @Override
-    public Pet findByName(String name) {
-        return null;
+    public PetDTO findByName(String name) {
+        return petRepository.findByName(name).map(petMapper::toDto).orElseThrow(() -> new NoSuchElementException("Pet not found"));
     }
 
     @Override
-    public Pet save(Pet pet) {
-        return null;
+    public PetDTO save(PetDTO PetDTO) {
+
+        Pet pet = petMapper.toEntity(PetDTO);
+
+        if(checkIfPetExists(pet.getId()).isPresent()) {
+            throw new IllegalArgumentException("Pet already exists");
+        }
+        Pet newPet = petRepository.save(pet);
+        return petMapper.toDto(newPet);
+    }
+
+    @Override
+    public PetDTO update(PetDTO petDTO) {
+        Pet pet = petMapper.toEntity(petDTO);
+        if(!checkIfPetExists(pet.getId()).isPresent()) {
+            throw new IllegalArgumentException("Pet not found");
+        }
+        pet = petRepository.save(pet);
+        return petMapper.toDto(pet);
     }
 
     @Override
     public void delete(Long id) {
-
+        petRepository.deleteById(id);
     }
+
+    private Optional<Pet> checkIfPetExists(Long id) {
+        return petRepository.findById(id);
+    }
+
 
 }
