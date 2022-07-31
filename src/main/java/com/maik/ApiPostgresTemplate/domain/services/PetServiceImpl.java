@@ -40,7 +40,7 @@ public class PetServiceImpl implements PetService {
 
         Pet pet = petMapper.toEntity(PetDTO);
 
-        if(checkIfPetExists(pet.getId()).isPresent()) {
+        if(pet.getId() != null && checkIfPetExists(pet.getId()).isPresent()) {
             throw new IllegalArgumentException("Pet already exists");
         }
         Pet newPet = petRepository.save(pet);
@@ -53,6 +53,10 @@ public class PetServiceImpl implements PetService {
         if(!checkIfPetExists(pet.getId()).isPresent()) {
             throw new IllegalArgumentException("Pet not found");
         }
+        //check if is null
+        if(pet.getId() == null) {
+            throw new IllegalArgumentException("Pet id cannot be null");
+        }
         pet = petRepository.save(pet);
         return petMapper.toDto(pet);
     }
@@ -63,6 +67,9 @@ public class PetServiceImpl implements PetService {
     }
 
     private Optional<Pet> checkIfPetExists(Long id) {
+        if(id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
         return petRepository.findById(id);
     }
 

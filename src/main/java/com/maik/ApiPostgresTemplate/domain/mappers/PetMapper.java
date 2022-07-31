@@ -5,6 +5,7 @@ import com.maik.ApiPostgresTemplate.models.dto.PetDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public interface PetMapper {
      * @param target the target
      * @return the pet dto
      */
+    @Mapping(target = "id", nullValueCheckStrategy = NullValueCheckStrategy.ON_IMPLICIT_CONVERSION)
     Pet toEntity(PetDTO target);
 
     List<PetDTO> toDto(List<Pet> target);

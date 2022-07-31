@@ -1,6 +1,7 @@
 package com.maik.ApiPostgresTemplate.exceptions;
 
 import com.maik.ApiPostgresTemplate.models.dto.ErrorDTO;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -67,7 +68,8 @@ public class ExceptionController {
 	 * @param e the e
 	 * @return the response entity
 	 */
-	@ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class, MethodArgumentNotValidException.class, IllegalArgumentException.class})
+	@ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class,
+			MethodArgumentNotValidException.class, IllegalArgumentException.class, InvalidDataAccessApiUsageException.class})
 	public ResponseEntity<ErrorDTO> badRequestException(Exception e) {
 
 		ErrorDTO errorDTO = new ErrorDTO();
